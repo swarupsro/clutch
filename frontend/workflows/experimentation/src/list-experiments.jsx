@@ -4,23 +4,41 @@ import { Button, Container } from "@material-ui/core";
 
 import { StartAbortExperiment, StartLatencyExperiment } from "./start-experiment";
 
-function renderListItem(experiment) {
+function isFunction(functionToCheck) {
+  return functionToCheck && {}.toString.call(functionToCheck) === '[object Function]';
+ }
+
+function renderListItem(experiment, columns, mapping) {
+  var data = [];
+  var item;
+  console.log(experiment)
+  columns.forEach(column => {
+    let value = mapping[column]
+    if (isFunction(value)) {
+      item = value(experiment);
+    } else {
+      item = experiment[value];
+    }
+
+    data.push(item);
+  });
+
   return (
     <Row
       key={experiment.id}
-      data={[
-        experiment.identifier,
-        experiment.targets,
-        experiment.type,
-        experiment.description,
-        experiment.status,
-      ]}
+      data={data}
     />
   );
 }
 
-const ListExperiments = () => {
+const ListExperiments = ({ heading, columns, mapping }) => {
+  console.log('heading: ' + heading);
+  console.log(JSON.stringify(columns, null, 4));
+  console.log(JSON.stringify(mapping, null, 4));
+  console.log('RA: TEST');
   const [experiments, setExperiments] = useState();
+
+  let column_names = columns.map(name => name.toUpperCase()  );
 
   if (!experiments) {
     client.post("/v1/experiments/get").then(response => {
@@ -28,7 +46,7 @@ const ListExperiments = () => {
     });
 
     return (
-      <Table headings={["Identifier", "Targets", "Type", "Description", "Status"]} />
+      <Table headings={column_names} />
     );
   }
 
@@ -36,10 +54,10 @@ const ListExperiments = () => {
     <Container>
       <Table
         data={experiments}
-        headings={["Identifier", "Targets", "Type", "Description", "Status"]}
+        headings={column_names}
       >
         {experiments.map(e => {
-          return renderListItem(e);
+          return renderListItem(e, columns, mapping);
         })}
       </Table>
       <Button onClick={StartAbortExperiment}>Start Abort Experiment</Button>

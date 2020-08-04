@@ -65,6 +65,12 @@ const TriageDetails = () => {
 };
 
 const RemoteTriage = ({ heading, options }) => {
+  console.log('ra: test');
+  console.log('ra: ' + heading + options);
+  console.log(JSON.stringify(options, null, 4));
+  console.log('ra: end')
+
+  
   const includeOptions = {};
   Object.values(options || INCLUDE_OPTIONS).forEach(option => {
     includeOptions[option] = true;

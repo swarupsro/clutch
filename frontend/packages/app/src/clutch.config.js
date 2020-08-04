@@ -49,6 +49,15 @@ module.exports = {
   "@clutch-sh/experimentation": {
     listExperiments: {
       trending: true,
+      componentProps: {
+        columns: ["targets", "type", "description", "status"],
+        mapping: {
+          targets: "targets",
+          type: "type",
+          description: "description",
+          status: function(e) { return e.status }
+        },
+      },
     },
     startAbortExperiment: {
       trending: true,
